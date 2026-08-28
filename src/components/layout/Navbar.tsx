@@ -2,6 +2,7 @@ import { Dumbbell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
+import { UserButton } from "@neondatabase/auth-ui";
 
 export default function Navbar() {
   const user = useAuth();
@@ -22,6 +23,7 @@ export default function Navbar() {
                   My Plan
                 </Button>
               </Link>
+              <UserButton className="bg-accent"/>
             </>
           ) : (
             <>
