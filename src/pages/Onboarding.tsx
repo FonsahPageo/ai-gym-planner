@@ -3,9 +3,11 @@ import { useAuth } from "../context/AuthContext";
 import { Card } from "../components/ui/Card";
 import { Select } from "../components/ui/Select";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Textarea } from "../components/ui/Textarea";
 import { Button } from "../components/ui/Button";
 import { ArrowRight } from "lucide-react";
+import type { UserProfile } from "../types";
 
 const goalOptions = [
   { value: "bulk", label: "Build Muscle (Bulk)" },
@@ -50,7 +52,10 @@ const splitOptions = [
 ];
 
 export default function Onboarding() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, saveProfile } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [formData, setFormData] = useState({
     goal: "bulk",
     experience: "intermediate",
@@ -67,7 +72,29 @@ export default function Onboarding() {
 
   async function handleQuestionnaire(e: React.SubmitEvent) {
     e.preventDefault();
-    
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    const profile: Omit<UserProfile, "userId" | "updatedAt"> = {
+      goal: formData.goal as UserProfile["goal"],
+      experience: formData.experience as UserProfile["experience"],
+      daysPerWeek: parseInt(formData.daysPerWeek),
+      sessionLength: parseInt(formData.sessionLength),
+      equipment: formData.equipment as UserProfile["equipment"],
+      injuries: formData.injuries || undefined,
+      preferredSplit: formData.preferredSplit as UserProfile["preferredSplit"],
+    };
+
+    try {
+      await saveProfile(profile);
+      navigate("/profile", { replace: true });
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Something went wrong.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (!user) {
@@ -144,9 +171,18 @@ export default function Onboarding() {
                 onChange={(e) => updateForm("injuries", e.target.value)}
               />
 
+              {submitError ? (
+                <p className="text-sm text-red-400">{submitError}</p>
+              ) : null}
+
               <div className="flex gap-3 pt-2">
-                <Button type="submit" className="flex-1 gap-2">
-                  Generate My Plan <ArrowRight className="w-4 h-4" />
+                <Button
+                  type="submit"
+                  className="flex-1 gap-2"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Saving..." : "Generate My Plan"} 
+                  {!isSubmitting ? <ArrowRight className="w-4 h-4" /> : null}
                 </Button>
               </div>
             </form>
