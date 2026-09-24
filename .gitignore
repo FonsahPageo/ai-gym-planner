@@ -30,3 +30,4 @@ package-lock.json
 .claude
 .cursor
 .devin
+generated
