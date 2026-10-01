@@ -4,7 +4,9 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4001";
 async function post(path: string, body: object) {
   const res = await fetch(`${BASE_URL}/api${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(body),
   });
 
@@ -23,5 +25,9 @@ export const api = {
     profile: Omit<UserProfile, "userId" | "updatedAt">,
   ) => {
     return post("/profile", { userId, ...profile });
+  },
+
+  generatePlan: (userId: string) => {
+    return post("/plan/generate", { userId });
   },
 };

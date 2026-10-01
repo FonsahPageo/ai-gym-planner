@@ -53,7 +53,7 @@ const splitOptions = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, saveProfile } = useAuth();
+  const { user, saveProfile, generatePlan } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [formData, setFormData] = useState({
@@ -90,9 +90,12 @@ export default function Onboarding() {
     try {
       await saveProfile(profile);
       setIsGenerating(true);
+      await generatePlan();
       navigate("/profile", { replace: true });
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to save profile");
+      setError(
+        error instanceof Error ? error.message : "Failed to save profile",
+      );
     } finally {
       setIsSubmitting(false);
     }
