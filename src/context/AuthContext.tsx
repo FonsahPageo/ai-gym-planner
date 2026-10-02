@@ -82,7 +82,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           weeklySchedule: planData.planJson.weeklySchedule,
           progression: planData.planJson.progression,
           version: planData.version,
-          createdAt: planData.createdAT,
+          createdAt: planData.createdAt,
         });
       }
     } catch (error) {
